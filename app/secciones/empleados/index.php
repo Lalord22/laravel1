@@ -54,7 +54,10 @@ $lista_tbl_empleados=$sentencia->fetchAll(PDO::FETCH_ASSOC);
                     
                     
                         </td>
-                        <td><?php echo $registro['foto']; ?></td>
+                        <td>
+                            <img src="../../img/<?php echo $registro['foto']; ?>" alt="" width="50">
+
+                        </td>
                         <td><?php echo $registro['cv']; ?></td>
                         <td><?php echo $registro['puesto']; ?></td>
                         <td><?php echo $registro['fechadeingreso']; ?></td>
