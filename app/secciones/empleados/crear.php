@@ -1,3 +1,61 @@
+<?php
+include("../../bd.php");
+
+if($_POST){
+    //print_r($_POST);
+
+    //Recolectamos los datos del metodo POST
+    $primernombre=(isset($_POST["primernombre"])?$_POST["primernombre"]:"");
+    $segundonombre=(isset($_POST["segundonombre"])?$_POST["segundonombre"]:"");
+    $primerapellido=(isset($_POST["primerapellido"])?$_POST["primerapellido"]:"");
+    $segundoapellido=(isset($_POST["segundoapellido"])?$_POST["segundoapellido"]:"");
+
+    
+    $foto=(isset($_FILES["foto"]['name'])?$_FILES["foto"]['name']:"");
+    $cv=(isset($_FILES["cv"]['name'])?$_FILES["cv"]['name']:"");
+
+    $idpuesto=(isset($_POST["idpuesto"])?$_POST["idpuesto"]:"");
+    $fechadeingreso=(isset($_POST["fechadeingreso"])?$_POST["fechadeingreso"]:"");
+
+    //Preparar la insercion de los datos
+    $sentencia=$conexion->prepare("INSERT INTO 
+    tbl_empleados(id,primernombre,segundonombre,primerapellido,segundoapellido,foto,cv,idpuesto,fechadeingreso) 
+    VALUES (NULL, :primernombre,:segundonombre,:primerapellido,:segundoapellido,:foto,:cv,:idpuesto,:fechadeingreso)" );
+
+    $sentencia->bindParam(":primernombre",$primernombre);
+    $sentencia->bindParam(":segundonombre",$segundonombre);
+    $sentencia->bindParam(":primerapellido",$primerapellido);
+    $sentencia->bindParam(":segundoapellido",$segundoapellido);
+
+    $fecha_foto=new DateTime();
+
+    $nombreArchivo_foto=($foto!='')?$fecha_foto->getTimestamp()."_".$_FILES["foto"]['name']:"";
+    $tmp_foto=$_FILES["foto"]['tmp_name'];
+
+    if($tmp_foto!=''){
+        move_uploaded_file($tmp_foto,"../../img/".$nombreArchivo_foto);
+    }
+
+
+    $sentencia->bindParam(":foto",$nombreArchivo_foto);
+    
+    $sentencia->bindParam(":cv",$cv);
+    
+    $sentencia->bindParam(":idpuesto",$idpuesto);
+    $sentencia->bindParam(":fechadeingreso",$fechadeingreso);
+
+    $sentencia->execute();
+
+    header("Location:index.php");
+
+
+}
+
+$sentencia=$conexion->prepare("SELECT * FROM `tbl_puestos`");
+$sentencia->execute();
+$lista_tbl_puestos=$sentencia->fetchAll(PDO::FETCH_ASSOC);
+
+?>
 <?php include("../../templates/header.php"); ?>
 
 <br>
@@ -54,10 +112,9 @@
         <div class="mb-3">
             <label for="idpuesto" class="form-label">Puesto:</label>
             <select class="form-select form-select-sm" name="idpuesto" id="idpuesto">
-                <option selected>Select one</option>
-                <option value="">New Delhi</option>
-                <option value="">Istanbul</option>
-                <option value="">Jakarta</option>
+            <?php foreach ($lista_tbl_puestos as $registro) { ?>
+                <option value="<?php echo $registro['id']?>"><?php echo $registro['nombredelpuesto']?></option>
+            <?php } ?>
             </select>
         </div>
 

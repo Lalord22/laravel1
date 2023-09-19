@@ -1,5 +1,5 @@
 <?php
-$url_base="http://localhost/app/";
+$url_base="http://localhost/laravel1/app/";
 ?>
 
 <!doctype html>   

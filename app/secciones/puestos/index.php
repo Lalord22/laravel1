@@ -19,6 +19,7 @@ $lista_tbl_puestos=$sentencia->fetchAll(PDO::FETCH_ASSOC);
 
 //print_r($lista_tbl_puestos);
 ?>
+
 <?php include("../../templates/header.php"); ?>
 <br/>
 
