@@ -27,9 +27,9 @@ if($_POST){
     $sentencia->bindParam(":primerapellido",$primerapellido);
     $sentencia->bindParam(":segundoapellido",$segundoapellido);
 
-    $fecha_foto=new DateTime();
+    $fecha_=new DateTime();
 
-    $nombreArchivo_foto=($foto!='')?$fecha_foto->getTimestamp()."_".$_FILES["foto"]['name']:"";
+    $nombreArchivo_foto=($foto!='')?$fecha_->getTimestamp()."_".$_FILES["foto"]['name']:"";
     $tmp_foto=$_FILES["foto"]['tmp_name'];
 
     if($tmp_foto!=''){
@@ -39,7 +39,14 @@ if($_POST){
 
     $sentencia->bindParam(":foto",$nombreArchivo_foto);
     
-    $sentencia->bindParam(":cv",$cv);
+    $nombreArchivo_cv=($cv!='')?$fecha_->getTimestamp()."_".$_FILES["cv"]['name']:"";
+    $tmp_cv=$_FILES["cv"]['tmp_name'];
+
+    if($tmp_cv!=''){
+        move_uploaded_file($tmp_cv,"../../cv/".$nombreArchivo_cv);
+    }
+
+    $sentencia->bindParam(":cv",$nombreArchivo_cv);
     
     $sentencia->bindParam(":idpuesto",$idpuesto);
     $sentencia->bindParam(":fechadeingreso",$fechadeingreso);
