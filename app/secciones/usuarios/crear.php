@@ -20,7 +20,8 @@ if($_POST){
     $sentencia->bindParam(":correo",$correo);
 
     $sentencia->execute();
-    header("Location:index.php");
+    $mensaje="Registro agregado con exito";
+    header("Location:index.php?mensaje=".$mensaje);
 
 
 }

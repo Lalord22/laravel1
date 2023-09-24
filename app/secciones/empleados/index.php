@@ -29,7 +29,8 @@ if(isset($_GET['txtID'])){
     $sentencia->bindParam(":id",$txtID);
 
     $sentencia->execute();
-    header("Location:index.php");
+    $mensaje="Registro eliminado con exito";
+    header("Location:index.php?mensaje=".$mensaje);
     
 
 }
@@ -61,7 +62,7 @@ $lista_tbl_empleados=$sentencia->fetchAll(PDO::FETCH_ASSOC);
     <div class="card-body">
         
         <div class="table-responsive-sm">
-            <table class="table">
+            <table class="table" id="tabla_id">
                 <thead>
                     <tr>
                         <th scope="col">ID</th>
@@ -92,12 +93,12 @@ $lista_tbl_empleados=$sentencia->fetchAll(PDO::FETCH_ASSOC);
                             <img src="../../img/<?php echo $registro['foto']; ?>" alt="" width="50">
 
                         </td>
-                        <td><?php echo $registro['cv']; ?></td>
+                        <td><a href="<?php echo "../../cv/".$registro['cv']; ?>"><?php echo $registro['cv']; ?></a></td>
                         <td><?php echo $registro['puesto']; ?></td>
                         <td><?php echo $registro['fechadeingreso']; ?></td>
-                        <td><a name="" id="" class="btn btn-primary" href="#" role="button">Carta</a>|
-                        <a class="btn btn-info" href="editar.php?txtID=<?php echo $registro['id']; ?>" role="button">Editar</a>|
-                        <a class="btn btn-danger" href="index.php?txtID=<?php echo $registro['id']; ?>" role="button">Eliminar</a>
+                        <td><a name="" id="" class="btn btn-primary" href="carta_recomendacion.php?txtID=<?php echo $registro['id']; ?>" role="button">Carta</a> |
+                        <a class="btn btn-info" href="editar.php?txtID=<?php echo $registro['id']; ?>" role="button">Editar</a> |
+                        <a class="btn btn-danger" href="javascript:borrar(<?php echo $registro['id']; ?>);" role="button">Eliminar</a>
                         </td>
                     </tr>
                 <?php } ?>

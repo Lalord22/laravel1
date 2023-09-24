@@ -9,7 +9,8 @@ if(isset($_GET['txtID'])){
 
     $sentencia->bindParam(":id",$txtID);
     $sentencia->execute();
-    header("Location:index.php");
+    $mensaje="Registro eliminado con exito";
+    header("Location:index.php?mensaje=".$mensaje);
 
 }
 
@@ -31,7 +32,7 @@ $lista_tbl_usuarios=$sentencia->fetchAll(PDO::FETCH_ASSOC);
     </div>
     <div class="card-body">
     <div class="table-responsive-sm">
-    <table class="table">
+    <table class="table" id="tabla_id">
         <thead>
             <tr>
                 <th scope="col">ID</th>
@@ -52,7 +53,7 @@ $lista_tbl_usuarios=$sentencia->fetchAll(PDO::FETCH_ASSOC);
                 <td><?php echo $registro['correo']; ?></td>
                 <td><a class="btn btn-info" href="editar.php?txtID=<?php echo $registro['id']; ?>" role="button">Editar</a>|
                     
-                    <a class="btn btn-danger" href="index.php?txtID=<?php echo $registro['id']; ?>" role="button">Eliminar</a>
+                    <a class="btn btn-danger" href="javascript:borrar(<?php echo $registro['id']; ?>);" role="button">Eliminar</a>
                 
             
                 </td>

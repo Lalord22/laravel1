@@ -28,6 +28,92 @@ if(isset( $_GET['txtID'] )){
 
 
 }
+
+if($_POST){
+    //print_r($_POST);
+
+    //Recolectamos los datos del metodo POST
+    $txtID=(isset($_POST[ 'txtID' ]))?$_POST['txtID']:"";
+    $primernombre=(isset($_POST["primernombre"])?$_POST["primernombre"]:"");
+    $segundonombre=(isset($_POST["segundonombre"])?$_POST["segundonombre"]:"");
+    $primerapellido=(isset($_POST["primerapellido"])?$_POST["primerapellido"]:"");
+    $segundoapellido=(isset($_POST["segundoapellido"])?$_POST["segundoapellido"]:"");
+
+    
+
+    $idpuesto=(isset($_POST["idpuesto"])?$_POST["idpuesto"]:"");
+    $fechadeingreso=(isset($_POST["fechadeingreso"])?$_POST["fechadeingreso"]:"");
+
+    //Preparar la insercion de los datos
+    $sentencia=$conexion->prepare("UPDATE tbl_empleados SET primernombre=:primernombre,segundonombre=:segundonombre,primerapellido=:primerapellido,segundoapellido=:segundoapellido,idpuesto=:idpuesto,fechadeingreso=:fechadeingreso WHERE id=:id");
+
+
+    $sentencia->bindParam(":primernombre",$primernombre);
+    $sentencia->bindParam(":segundonombre",$segundonombre);
+    $sentencia->bindParam(":primerapellido",$primerapellido);
+    $sentencia->bindParam(":segundoapellido",$segundoapellido);
+    $sentencia->bindParam(":idpuesto",$idpuesto);
+    $sentencia->bindParam(":fechadeingreso",$fechadeingreso);
+    $sentencia->bindParam(":id",$txtID);
+    $sentencia->execute();
+
+    $foto=(isset($_FILES["foto"]['name'])?$_FILES["foto"]['name']:"");
+
+    $fecha_=new DateTime();
+
+    $nombreArchivo_foto=($foto!='')?$fecha_->getTimestamp()."_".$_FILES["foto"]['name']:"";
+    $tmp_foto=$_FILES["foto"]['tmp_name'];
+
+    if($tmp_foto!=''){
+        move_uploaded_file($tmp_foto,"../../img/".$nombreArchivo_foto);
+
+        $sentencia=$conexion->prepare("SELECT foto FROM `tbl_empleados` WHERE id=:id");
+        $sentencia->bindParam(":id",$txtID);
+        $sentencia->execute();
+        $registro_recuperado=$sentencia->fetch(PDO::FETCH_LAZY);
+        if(isset($registro_recuperado['foto']) && ($registro_recuperado['foto']!='')){
+            if(file_exists("../../img/".$registro_recuperado['foto'])){
+                unlink("../../img/".$registro_recuperado['foto']);
+            }
+        }
+
+        $sentencia=$conexion->prepare("UPDATE tbl_empleados SET foto=:foto WHERE id=:id");
+        $sentencia->bindParam(":id",$txtID);
+        $sentencia->bindParam(":foto",$nombreArchivo_foto);
+        $sentencia->execute();
+    }
+    
+    $sentencia->bindParam(":foto",$nombreArchivo_foto);
+
+
+    $cv=(isset($_FILES["cv"]['name'])?$_FILES["cv"]['name']:"");
+
+    $nombreArchivo_cv=($cv!='')?$fecha_->getTimestamp()."_".$_FILES["cv"]['name']:"";
+    $tmp_cv=$_FILES["cv"]['tmp_name'];
+    if($tmp_cv!=''){
+        move_uploaded_file($tmp_cv,"../../cv/".$nombreArchivo_cv);
+
+        $sentencia=$conexion->prepare("SELECT cv FROM `tbl_empleados` WHERE id=:id");
+        $sentencia->bindParam(":id",$txtID);
+        $sentencia->execute();
+        $registro_recuperado=$sentencia->fetch(PDO::FETCH_LAZY);
+        if(isset($registro_recuperado['cv']) && ($registro_recuperado['cv']!='')){
+            if(file_exists("../../cv/".$registro_recuperado['cv'])){
+                unlink("../../cv/".$registro_recuperado['cv']);
+            }
+        }
+
+        $sentencia=$conexion->prepare("UPDATE tbl_empleados SET cv=:cv WHERE id=:id");
+        $sentencia->bindParam(":id",$txtID);
+        $sentencia->bindParam(":cv",$nombreArchivo_cv);
+        $sentencia->execute();
+    }
+
+    $mensaje="Registro actualizado con exito";
+    header("Location:index.php?mensaje=".$mensaje);
+
+
+}
 ?>
 
 <?php include("../../templates/header.php"); ?>
