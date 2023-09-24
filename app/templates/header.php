@@ -1,5 +1,10 @@
 <?php
+session_start();
 $url_base="http://localhost/laravel1/app/";
+
+if(!isset($_SESSION['usuario'])){
+    header("Location:".$url_base."login.php");
+}
 ?>
 
 <!doctype html>   
@@ -44,7 +49,7 @@ $url_base="http://localhost/laravel1/app/";
             <a class="nav-link" href="<?php echo $url_base;?>secciones/usuarios/">Usuarios</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="#">Log Out</a>
+            <a class="nav-link" href="<?php echo $url_base;?>cerrar.php">Log Out</a>
         </li>
     </ul>
 </nav>
