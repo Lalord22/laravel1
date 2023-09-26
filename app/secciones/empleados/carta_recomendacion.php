@@ -1,5 +1,29 @@
 <?php
+
+
 include("../../bd.php");
+
+$months = [
+    'January' => 'enero',
+    'February' => 'febrero',
+    'March' => 'marzo',
+    'April' => 'abril',
+    'May' => 'mayo',
+    'June' => 'junio',
+    'July' => 'julio',
+    'August' => 'agosto',
+    'September' => 'septiembre',
+    'October' => 'octubre',
+    'November' => 'noviembre',
+    'December' => 'diciembre'
+];
+
+$date = date('d F Y'); // Use 'F' to get the full month name in English
+$dateParts = explode(' ', $date);
+
+$day = $dateParts[0];
+$month = $months[$dateParts[1]];
+$year = $dateParts[2];
 
 if(isset( $_GET['txtID'] )){
      $txtID=(isset($_GET[ 'txtID' ]))?$_GET['txtID']:"";
@@ -55,7 +79,7 @@ ob_start();  //Empieza a grabar los datos en memoria
     <body>
         <h1>Carta de recomendacion Laboral</h1>
         <br/><br/>
-        San Jose, Costa Rica <strong> <?php echo date('d M Y'); ?>  </strong>
+        San Jose, Costa Rica <strong> <?php echo "{$day} {$month}";?> del <?php echo "{$year}"; ?>  </strong>
         <br/><br/>A quien pueda interesar:
         <br/><br/>Reciba un cordial saludo.
         <br/><br/>A traves de estas lineas deseo hacer de su conocimiento que la Sr(a) <strong> <?php echo $nombreCompleto; ?> </strong>, quien laboro en nuestra organizacion por 
@@ -70,10 +94,22 @@ ob_start();  //Empieza a grabar los datos en memoria
     </body>
 </html> 
 <?php 
+error_reporting(E_ALL);
+require '../../../vendor/autoload.php';
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+use PHPMailer\PHPMailer\SMTP;
+
+
+use Dompdf\Dompdf;
+
+try{
 $HTML=ob_get_clean(); //Toma lo que hay en memoria y lo guarda en la variable HTML  
 
+
+
 require_once("../../libs/autoload.inc.php");
-use Dompdf\Dompdf;
+
 $dompdf=new Dompdf();
 $opciones=$dompdf->getOptions();
 $opciones->set(array("isRemoteEnabled",true));
@@ -82,6 +118,41 @@ $dompdf->loadHtml($HTML);
 $dompdf->setPaper('letter');
 $dompdf->render();
 $dompdf->stream("archivo.pdf",array("Attachment"=>false));
+}catch(Exception $e){
+    echo "PDF could not be generated: {$e->getMessage()}";
+}
+
+
+
+try {
+
+    $mail = new PHPMailer(true);
+    // SMTP configuration
+    $mail->isSMTP();
+    $mail->Host       = "mail.smtp2go.com";
+    $mail->SMTPAuth = true; // Enable SMTP authentication
+    $mail->Username   = 'est.una.ac.cr';
+    $mail->Password   = 'Nlr6psVQ907VlcKp';
+    $mail->SMTPSecure = 'tls';
+    $mail->Port       = 2525;
+
+    
+
+    // Recipients and email content
+    $mail->setFrom('lalo22296@hotmail.com', 'Gerardo Salazar - Testing Sinart');
+    $mail->addAddress('testingsinart@gmail.com', 'Cliente');
+    $mail->addStringAttachment($dompdf->output(), 'archivo.pdf', 'base64', 'application/pdf');
+    $mail->isHTML(true);
+    $mail->Subject = 'Carta de Recomendacion';
+    $mail->Body    = $HTML;
+
+    // Send the email
+    $mail->send();
+    echo 'Email has been sent successfully';
+} catch (Exception $e) {
+    echo "Email could not be sent. Mailer Error: {$mail->ErrorInfo}";
+}
+
 ?>
 
 
