@@ -4,69 +4,43 @@ session_start();
 if ($_POST) {
     include("./bd.php");
 
-    $recaptchaSecretKey = '6Le6yFkoAAAAALdxb13RdkQdxm4tO5b-SSmsUlI3'; // Replace with your reCAPTCHA secret key
-    $recaptchaResponse = $_POST['g-recaptcha-response'];
+    // Verify reCAPTCHA
+    include("./recaptcha_verify.php");
 
-    $recaptchaUrl = 'https://www.google.com/recaptcha/api/siteverify';
-    $recaptchaData = [
-        'secret' => $recaptchaSecretKey,
-        'response' => $recaptchaResponse,
-    ];
+    if (is_array($recaptchaResult) && isset($recaptchaResult['success'])) {
+        if ($recaptchaResult['success']) {
+            // reCAPTCHA verification passed, proceed with database validation
+            $sentencia = $conexion->prepare("SELECT *, count(*) as n_usuario
+                FROM `tbl_usuarios`
+                WHERE usuario = :usuario
+                AND password = :password");
 
-    $options = [
-        'http' => [
-            'header' => "Content-Type: application/x-www-form-urlencoded\r\n",
-            'method' => 'POST',
-            'content' => http_build_query($recaptchaData),
-        ],
-    ];
+            $usuario = $_POST["usuario"];
+            $contrasenia = $_POST["contrasenia"];
 
-    $context = stream_context_create($options);
-    $recaptchaResult = @file_get_contents($recaptchaUrl, false, $context);
+            $sentencia->bindParam(":usuario", $usuario);
+            $sentencia->bindParam(":password", $contrasenia);
+            $sentencia->execute();
 
-    if ($recaptchaResult === false) {
-        // Handle cURL error...
-        $curlError = error_get_last();
-        $errorMessage = isset($curlError['message']) ? $curlError['message'] : 'Unknown cURL error';
-        $mensaje = 'cURL error: ' . $errorMessage;
-    } else {
-        $recaptchaResult = json_decode($recaptchaResult, true);
-        
-        if ($recaptchaResult !== null) {
-            if (isset($recaptchaResult['success']) && $recaptchaResult['success']) {
-                // reCAPTCHA verification passed, proceed with database validation
-                $sentencia = $conexion->prepare("SELECT *, count(*) as n_usuario
-                    FROM `tbl_usuarios`
-                    WHERE usuario = :usuario
-                    AND password = :password");
+            $registro = $sentencia->fetch(PDO::FETCH_LAZY);
 
-                $usuario = $_POST["usuario"];
-                $contrasenia = $_POST["contrasenia"];
-
-                $sentencia->bindParam(":usuario", $usuario);
-                $sentencia->bindParam(":password", $contrasenia);
-                $sentencia->execute();
-
-                $registro = $sentencia->fetch(PDO::FETCH_LAZY);
-
-                if ($registro["n_usuario"] == 1) {
-                    // User with the provided username and password exists
-                    $_SESSION['usuario'] = $registro["usuario"];
-                    $_SESSION['logueado'] = TRUE;
-                    header("Location: ./index.php");
-                } else {
-                    $mensaje = "Datos incorrectos";
-                }
+            if ($registro["n_usuario"] == 1) {
+                // User with the provided username and password exists
+                $_SESSION['usuario'] = $registro["usuario"];
+                $_SESSION['logueado'] = TRUE;
+                header("Location: ./index.php");
             } else {
-                $mensaje = "Por favor, complete el CAPTCHA correctamente.";
+                $mensaje = "Datos incorrectos";
             }
         } else {
-            // Handle JSON decoding error
-            $mensaje = 'Error decoding JSON response';
+            $mensaje = "Por favor, complete el CAPTCHA correctamente.";
         }
+    } else {
+        $mensaje = "Error al verificar el reCAPTCHA."; // Handle other verification errors here
     }
 }
 ?>
+
 
 
 
