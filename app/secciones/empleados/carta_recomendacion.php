@@ -125,7 +125,7 @@ $dompdf->stream("archivo.pdf",array("Attachment"=>false));
 }
 
 
-/*
+
 try {
 
     $mail = new PHPMailer(true);
@@ -154,7 +154,7 @@ try {
 } catch (Exception $e) {
     echo "Email could not be sent. Mailer Error: {$mail->ErrorInfo}";
 }
-*/
+
 ?>
 
 
