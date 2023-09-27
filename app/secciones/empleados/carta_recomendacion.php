@@ -77,19 +77,21 @@ ob_start();  //Empieza a grabar los datos en memoria
         <link rel="stylesheet" href="../../css/bootstrap.min.css">
     </head>
     <body>
-        <h1>Carta de recomendacion Laboral</h1>
         <br/><br/>
-        San Jose, Costa Rica <strong> <?php echo "{$day} {$month}";?> del <?php echo "{$year}"; ?>  </strong>
-        <br/><br/>A quien pueda interesar:
-        <br/><br/>Reciba un cordial saludo.
-        <br/><br/>A traves de estas lineas deseo hacer de su conocimiento que la Sr(a) <strong> <?php echo $nombreCompleto; ?> </strong>, quien laboro en nuestra organizacion por 
-        <strong> <?php echo $diferencia->y; ?> años </strong> es un ciudadano intachable. Ha demostrado ser un excelente trabajador, 
-        comprometido, responsable, y fiel cumplidor de sus tareas.
-        Siempre ha manifestado preocupacion por mejorar, capacitarse y actualizar sus conocimientos.
-        <br/><br/>
-        Durante estos años se ha desempeñado como: <strong> <?php echo $puesto; ?> </strong> 
-        Es por ello que le sugiero considere esta recomendacion, con la confianza de que estara siempre a la altura de sus compromisos y responsabilidades.
-        <br/><br/>Sin otro particular, me despido.
+        <?php echo "{$day} {$month}";?> del <?php echo "{$year}";?> 
+        <br/><br/>Departamento Financiero
+        <br/>SINART, S.A.
+        <br/><br/>Reciba un cordial saludo de nuestra parte, el presente documento es para solicitar la reserva presupuestaria de la pauta del mes <strong><?php echo "{$month} {$year}" ;?> </strong>para el cliente <strong> <?php echo $nombreCompleto; ?> </strong>
+        <br/><br/>Pauta en: <strong> <?php echo $puesto; ?> </strong>
+        <br/><br/>Campaña: <strong> <?php echo $puesto; ?> </strong>
+        <br/><br/>Orden de compra Sinart: <strong> <?php echo $txtID; ?> </strong>
+        <br/><br/>No se contempla el 10% de pauta del Sinart ni la pauta en digital.
+        <br/><br/>Monto total de la pauta: <strong> <?php echo $puesto; // aca va el la variable del monto ?> </strong>
+        <br><br>Se adjunta validaciones al final de la firma
+        <br/><br/>Cualquier consulta con todo gusto.
+        <br/><br/>Atentamente, Director General
+        <br/><br/>Sub Director General                            Por MEDIOS
+        
 
     </body>
 </html> 
@@ -123,7 +125,7 @@ $dompdf->stream("archivo.pdf",array("Attachment"=>false));
 }
 
 
-
+/*
 try {
 
     $mail = new PHPMailer(true);
@@ -140,7 +142,7 @@ try {
 
     // Recipients and email content
     $mail->setFrom('lalo22296@hotmail.com', 'Gerardo Salazar - Testing Sinart');
-    $mail->addAddress('testingsinart@gmail.com', 'Cliente');
+    $mail->addAddress('testingsinart@gmail.com', 'Cliente'); // Persona que recibe el correo
     $mail->addStringAttachment($dompdf->output(), 'archivo.pdf', 'base64', 'application/pdf');
     $mail->isHTML(true);
     $mail->Subject = 'Carta de Recomendacion';
@@ -152,7 +154,7 @@ try {
 } catch (Exception $e) {
     echo "Email could not be sent. Mailer Error: {$mail->ErrorInfo}";
 }
-
+*/
 ?>
 
 
